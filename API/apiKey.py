@@ -45,6 +45,4 @@ if __name__ == '__main__':
     print(json.dumps(weather_data, indent=4))
     
 # Print the contents of the response (should be None)
-print(response.content)
-    print(json.dumps(weather_data, indent=4))
-print(response.content)
+print(json.dumps(weather_data, indent=4))
