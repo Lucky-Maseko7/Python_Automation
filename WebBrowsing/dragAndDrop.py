@@ -42,7 +42,7 @@ def perform_drag_and_drop(driver):
     source = driver.find_element('xpath', '//*[@id="box7"]')
     dest = driver.find_element('xpath', '//*[@id="box107"]')
 
-    actions = ActionChains(driver)
+    actions = ActionChains(driver) 
     actions.drag_and_drop(source, dest).perform()
 
 
