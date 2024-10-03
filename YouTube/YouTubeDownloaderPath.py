@@ -31,8 +31,8 @@ def extract_chapters(video_path, chapters, output_dir):
 # Main script
 if __name__ == "__main__":
     url = input("Enter YouTube video URL: ")
-    full_video_path = 'C:\\Users\\ltmas\\Videos\\RawContent\\video.mp4'
-    chapters_dir = 'C:\\Users\\ltmas\\Videos\\RawContent\\YouTube'
+    full_video_path = 'C:\\Users\\user\\Videos\\RawContent\\video.mp4'
+    chapters_dir = 'C:\\Users\\user\\Videos\\RawContent\\YouTube'
     
     try:
         info_dict = download_video(url, full_video_path)
