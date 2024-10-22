@@ -127,7 +127,7 @@ def create_background(clip, target_aspect_ratio=9/16):
                                  x2=x_center + target_width/2,
                                  y2=y_center + target_height/2)
 
-    blurred_background = background.fl_image(lambda image: blur_frame(image, blur_radius=10))
+    blurred_background = background.fl_image(lambda image: blur_frame(image, blur_radius=40))
     return blurred_background
 
 def create_text_clip(text, size, duration, font_size=50):
@@ -162,7 +162,7 @@ def create_subtitle_image(text, videosize, font_size=50):
     draw = ImageDraw.Draw(img)
 
     # Load a font
-    font = ImageFont.truetype("ariald.ttf", font_size)
+    font = ImageFont.truetype("arialbd.ttf", font_size)
 
     # Calculate text size and position using textbbox
     left, top, right, bottom = draw.textbbox((0, 0), text, font=font)
@@ -218,8 +218,6 @@ def create_video_subfolder(download_path, video_url):
     try:
         yt = YouTube(video_url)
         video_title = yt.title.replace(" ", "_")  # Replace spaces with underscores to avoid directory issues
-        subfolder_path = os.path.join(download_path, video_title)
-        
         video_folder_path = os.path.join(download_path, video_title)
         clips_folder_path = os.path.join(video_folder_path, "clips")
         
@@ -234,7 +232,17 @@ def create_video_subfolder(download_path, video_url):
         return video_folder_path, clips_folder_path
     except Exception as e:
         print(f"Error creating subfolder: {e}")
-        return download_path  # If there's an error, use the original path
+        print("Using default folder structure.")
+        # Create a generic subfolder
+        generic_folder = os.path.join(download_path, "youtube_video")
+        generic_clips_folder = os.path.join(generic_folder, "clips")
+        
+        if not os.path.exists(generic_folder):
+            os.makedirs(generic_folder)
+        if not os.path.exists(generic_clips_folder):
+            os.makedirs(generic_clips_folder)
+        
+        return generic_folder, generic_clips_folder
     
 def main():
     url = get_video_url()

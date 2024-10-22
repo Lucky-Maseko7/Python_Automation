@@ -108,6 +108,28 @@ def generate_captions(text, start_time, end_time, format='srt'):
             vtt_file.captions.append(caption)
         return vtt_file
 
+def blur_frame(image, blur_radius=5):
+    return np.array(Image.fromarray(image).filter(ImageFilter.GaussianBlur(blur_radius)))
+
+def create_background(clip, target_aspect_ratio=9/16):
+    target_height = int(clip.w / target_aspect_ratio)
+    target_width = clip.w
+
+    if clip.h / clip.w > target_aspect_ratio:
+        background = clip.resize(width=target_width)
+    else:
+        background = clip.resize(height=target_height)
+
+    x_center = background.w / 2
+    y_center = background.h / 2
+    background = background.crop(x1=x_center - target_width/2,
+                                 y1=y_center - target_height/2,
+                                 x2=x_center + target_width/2,
+                                 y2=y_center + target_height/2)
+
+    blurred_background = background.fl_image(lambda image: blur_frame(image, blur_radius=50))
+    return blurred_background
+
 def create_text_clip(text, size, duration, font_size=50):
     img = Image.new('RGBA', size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
@@ -134,29 +156,7 @@ def create_text_clip(text, size, duration, font_size=50):
     
     return ImageClip(np.array(img)).set_duration(duration)
 
-def blur_frame(image, blur_radius=5):
-    return np.array(Image.fromarray(image).filter(ImageFilter.GaussianBlur(blur_radius)))
-
-def create_background(clip, target_aspect_ratio=9/16):
-    target_height = int(clip.w / target_aspect_ratio)
-    target_width = clip.w
-
-    if clip.h / clip.w > target_aspect_ratio:
-        background = clip.resize(width=target_width)
-    else:
-        background = clip.resize(height=target_height)
-
-    x_center = background.w / 2
-    y_center = background.h / 2
-    background = background.crop(x1=x_center - target_width/2,
-                                 y1=y_center - target_height/2,
-                                 x2=x_center + target_width/2,
-                                 y2=y_center + target_height/2)
-
-    blurred_background = background.fl_image(lambda image: blur_frame(image, blur_radius=10))
-    return blurred_background
-
-def create_subtitle_image(text, videosize, font_size=24):
+def create_subtitle_image(text, videosize, font_size=50):
     # Create a new image with a transparent background
     img = Image.new('RGBA', videosize, (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
@@ -173,7 +173,7 @@ def create_subtitle_image(text, videosize, font_size=24):
     # Draw semi-transparent black background
     bg_height = text_height + 10
     bg_top = videosize[1] - bg_height
-    draw.rectangle([(0, bg_top), (videosize[0], videosize[1])], fill=(0, 0, 0, 153))
+    draw.rectangle([(0, bg_top), (videosize[0], videosize[1])], fill=(0, 0, 0, 255))
 
     # Draw text
     draw.text(text_position, text, font=font, fill=(255, 255, 255, 255))
